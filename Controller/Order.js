@@ -72,9 +72,9 @@ export async function updateOrder(req, res) {
     let { id } = req.params;
     try {
         let result = await orderModel.findOneAndUpdate(
-            { _id: id, isGoOut: false },  // תנאי החיפוש: רק הזמנה שיש לה isGoOut שווה ל-false
-            { $set: { isGoOut: true } },  // עדכון הערך של isGoOut ל-true
-            { new: true }  // אופציות: מחזיר את המסמך לאחר עדכון
+            { _id: id, isGoOut: false }, 
+            { $set: { isGoOut: true } }, 
+            { new: true }  
         );
 
         if (!result)
