@@ -1,4 +1,4 @@
-import exp from "constants";
+import jwt from 'jsonwebtoken';
 import { ProductModel } from "../Models/Product.js";
 export async function getAllProducts(req, res) {
     let l=req.query.limit || 10;
@@ -40,44 +40,76 @@ export async function getProductById(req, res) {
     }
 
 }
+
 export async function addProduct(req, res) {
     let { body } = req;
-    if(!body.prodName||!body.price)
-        return res.status(404).json({title:"missing data in body",message:"name price are required"});
+    const token = req.headers.tkn;
+    if (!token) {
+        return res.status(401).json({ title: "Unauthorized", message: "No token provided" });
+    }
     try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        console.log('Decoded user:', decoded); 
+
+        if (!body.prodName || !body.price)
+            return res.status(404).json({ title: "missing data in body", message: "name price are required" });
+
         let newProduct = new ProductModel(req.body);
-            await newProduct.save();
-            res.json(newProduct);
+        await newProduct.save();
+        res.json(newProduct);
     }
     catch (err) {
-        res.status(400).json({ title: "can not add product ", message: err.message })
+        res.status(400).json({ title: "can not add product", message: err.message });
     }
 }
+
 export async function deleteProductById(req, res) {
     let { id } = req.params;
+    const token = req.headers.tkn;
+    if (!token) {
+        return res.status(401).json({ title: "Unauthorized", message: "No token provided" });
+    }
+
     try {
+        const decoded = jwt.verify(token,process.env.SECRET_KEY ); 
+        console.log('Decoded user:', decoded); 
+
         let result = await ProductModel.findByIdAndDelete(id);
         if (!result)
             return res.status(400).json({ title: "cannot delete by id", message: "no product with such id" });
+
         res.json(result);
     }
     catch (err) {
-        res.status(400).json({ title: "can not delete product by id", message: err.message })
+        res.status(400).json({ title: "can not delete product by id", message: err.message });
+    }
+}
+
+
+
+
+export async function updateProduct(req, res) {
+    let { id } = req.params;
+    let { price } = req.body;
+    const token = req.headers.tkn;
+    if (!token) {
+        return res.status(401).json({ title: "Unauthorized", message: "No token provided" });
     }
 
-}
-export async function updateProduct(req, res) {
-    let { id} = req.params;
-    let { price } = req.body; 
-    if(!price)
-        return res.status(404).json({title:"missing data in body",message:"price is required"});
     try {
+        const decoded = jwt.verify(token, process.env.SECRET_KEY); 
+        console.log('Decoded user:', decoded); 
+
+        if (!price)
+            return res.status(404).json({ title: "missing data in body", message: "price is required" });
+
         let result = await ProductModel.findByIdAndUpdate(id, req.body, { new: true });
         if (!result)
             return res.status(400).json({ title: "cannot update by id", message: "no product with such id" });
+
         res.json(result);
     }
     catch (err) {
-        res.status(400).json({ title: "can not update product by id", message: err.message })
+        res.status(400).json({ title: "can not update product by id", message: err.message });
     }
 }
