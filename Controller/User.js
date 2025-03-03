@@ -105,7 +105,7 @@ export async function updateUserPassword(req, res) {
 //         return res.status(400).json({ titel: "cannot get user by these details", message: err.message });
 //     }
 // }
-export async function getUseByUsernamePassword_login(req, res) {
+export async function getUserNamePassword_login(req, res) {
     let { userName, password } = req.body;
 
     if (!userName || !password)
