@@ -1,4 +1,5 @@
 import { userModel } from "../Models/User.js";
+import {generateToken} from '../Utils/jwt.js';
 export async function getAllUsers(req, res) {
     try {
         let result = await userModel.find().select("-password");
@@ -20,22 +21,6 @@ export async function getUserById(req, res) {
         res.status(400).json({ titel: "cannot get user by id", message: err.message })
     }
 }
-// export async function addUser_singUp(req, res) {
-//     let { body } = req;
-//     if (!body.userName || !body.password || !body.phone || !body.email)
-//         return res.status(404).json({ titel: "missing data in body", message: "userName password email phone are required" });
-//     try {
-//         let alreadyUser = await userModel.findOne({ userName: body.userName });
-//         if (alreadyUser)
-//             return res.status(409).json({ titel: "userName already exist", message: "change user name" });
-//         let newU = new userModel(req.body);
-//         await newU.save();
-//         res.json(newU);
-//     }
-//     catch (err) {
-//         res.status(400).json({ titel: "cannot add user", message: err.message })
-//     }
-// }
 export async function addUser_singUp(req, res) {
     let { body } = req;
     if (!body.userName || !body.password || !body.phone || !body.email)

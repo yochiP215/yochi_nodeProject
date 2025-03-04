@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { ProductModel } from "../Models/Product.js";
+
 export async function getAllProducts(req, res) {
     let l=req.query.limit || 10;
     let page=req.query.page||1;
