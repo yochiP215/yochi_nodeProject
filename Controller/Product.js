@@ -61,7 +61,7 @@ export async function addProduct(req, res) {
     }
     catch (err) {
         res.status(400).json({ title: "can not add product", message: err.message });
-    }
+    }  
 }
 
 export async function deleteProductById(req, res) {
