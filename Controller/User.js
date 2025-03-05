@@ -74,22 +74,8 @@ export async function updateUserPassword(req, res) {
         return res.status(400).json({ titel: "cannot update user by id", message: err.message });
     }
 }
-// export async function getUserNamePassword_login(req, res) {
-//     let { userName,password } = req.body;
-//     if (!userName|| !password)
-//         return res.status(404).json({ titel: "missing data in body", message: "userName password are required" });
-//     try {
-//         let result = await userModel.findOne( { userName:userName });
-//         if (!result)
-//             return res.status(404).json({ titel: "cannot login", message: "no user with such userName" });
-//         if(result.password!=password)
-//             return res.status(404).json({ titel: "cannot login", message: "wrong password" });
-//         res.json(result);
-//     }
-//     catch (err) {
-//         return res.status(400).json({ titel: "cannot get user by these details", message: err.message });
-//     }
-// }
+
+
 export async function getUserNamePassword_login(req, res) {
     let { userName, password } = req.body;
 
@@ -109,7 +95,6 @@ export async function getUserNamePassword_login(req, res) {
         console.log(err);
         res.status(400).json({ title: "cannot get user with such details", message: err.message })
     }
-
 }
 
 
