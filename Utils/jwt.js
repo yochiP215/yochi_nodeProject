@@ -5,7 +5,7 @@ export const generateToken = (user) => {
         userId: user._id,
         userName: user.userName,
         role: user.role
-    }, process.env.SECRET_KEY, { expiresIn: 3 * 60 })
+    }, process.env.SECRET_KEY, {  expiresIn: "2h" })
 
     return token;
 }
