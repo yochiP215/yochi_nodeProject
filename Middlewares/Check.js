@@ -7,7 +7,7 @@ export function check(req, res, next) {
     try {
 
         let result = jwt.verify(token, process.env.SECRET_KEY);
-        req.x= result;
+        req.x = result;
         next();
     }
     catch (err) {
@@ -21,12 +21,16 @@ export function checkManager(req, res, next) {
         return res.status(401).json({ title: "user unauthorized", message: "first login!" })
     try {
         let result = jwt.verify(token, process.env.SECRET_KEY);
-        req.x= result;
-        if (result.role == "admin")
-            next()
-        return res.status(403).json({ title: "user unauthorized", message: "you dont have permision " })
-    }
-    catch (err) {
-        return res.status(401).json({ title: "user unauthorized", message: err.message })
+        req.x = result;
+
+        // בודק אם תפקיד המשתמש הוא "admin"
+        if (result.role === "admin") {
+            next();
+        } else {
+            // אם לא admin, מחזיר שגיאה של חסר הרשאות
+            return res.status(403).json({ title: "user unauthorized", message: "you don't have permission" });
+        }
+    } catch (err) {
+        return res.status(401).json({ title: "user unauthorized", message: err.message });
     }
 }
