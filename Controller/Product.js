@@ -1,31 +1,59 @@
 import jwt from 'jsonwebtoken';
 import { ProductModel } from "../Models/Product.js";
 
+// export async function getAllProducts(req, res) {
+//     let l=req.query.limit || 10;
+//     let page=req.query.page||1;
+
+//     try {
+//         let result = await ProductModel.find().skip((page-1)*l).limit(l);
+//         res.json(result);
+//     }
+//     catch (err) {
+//         res.status(400).json({ title: "can not found all products", message: err.message })
+//     }
+// }
 export async function getAllProducts(req, res) {
-    let l=req.query.limit || 10;
-    let page=req.query.page||1;
+    let l = parseInt(req.query.limit) || 4;
+    let page = parseInt(req.query.page) || 1;
 
     try {
-        let result = await ProductModel.find().skip((page-1)*l).limit(l);
+        let result = await ProductModel.find()
+            .skip((page - 1) * l)
+            .limit(l);
+
         res.json(result);
-    }
-    catch (err) {
-        res.status(400).json({ title: "can not found all products", message: err.message })
+    } catch (err) {
+        res.status(400).json({ title: "Cannot fetch products", message: err.message });
     }
 }
-export const getTotalPages=async(req,res)=>{
-    let l=req.query.limit||10;
-    try{
-        let result=await ProductModel.countDocuments();
+// export const getTotalPages=async(req,res)=>{
+//     let l=req.query.limit||10;
+//     try{
+//         let result=await ProductModel.countDocuments();
+//         res.json({
+//             totalCount:result,
+//             pages:Math.ceil(result/l),
+//             limit:l
+//         })
+//     }
+//     catch(err){
+//         console.log(err)
+//         res.status(400).json({title:"cannot get all",message:err.message})
+//     }
+// }
+
+export const getTotalPages = async (req, res) => {
+    let l = parseInt(req.query.limit) || 10;
+    try {
+        let result = await ProductModel.countDocuments();
         res.json({
-            totalCount:result,
-            pages:Math.ceil(result/l),
-            limit:l
-        })
-    }
-    catch(err){
-        console.log(err)
-        res.status(400).json({title:"cannot get all",message:err.message})
+            totalCount: result,
+            pages: Math.ceil(result / l),
+            limit: l
+        });
+    } catch (err) {
+        res.status(400).json({ title: "Cannot get total pages", message: err.message });
     }
 }
 export async function getProductById(req, res) {
@@ -50,7 +78,7 @@ export async function addProduct(req, res) {
     }
     try {
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
-        console.log('Decoded user:', decoded); 
+        console.log('Decoded user:', decoded);
 
         if (!body.prodName || !body.price)
             return res.status(404).json({ title: "missing data in body", message: "name price are required" });
@@ -61,7 +89,7 @@ export async function addProduct(req, res) {
     }
     catch (err) {
         res.status(400).json({ title: "can not add product", message: err.message });
-    }  
+    }
 }
 
 export async function deleteProductById(req, res) {
@@ -72,8 +100,8 @@ export async function deleteProductById(req, res) {
     }
 
     try {
-        const decoded = jwt.verify(token,process.env.SECRET_KEY ); 
-        console.log('Decoded user:', decoded); 
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        console.log('Decoded user:', decoded);
 
         let result = await ProductModel.findByIdAndDelete(id);
         if (!result)
@@ -98,8 +126,8 @@ export async function updateProduct(req, res) {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.SECRET_KEY); 
-        console.log('Decoded user:', decoded); 
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        console.log('Decoded user:', decoded);
 
         if (!price)
             return res.status(404).json({ title: "missing data in body", message: "price is required" });

@@ -31,7 +31,7 @@ export function checkManager(req, res, next) {
 
         // אם המשתמש לא admin, מחזירים שגיאה ולא ממשיכים
         return res.status(403).json({ title: "user unauthorized", message: "you don't have permission" });
-
+        
     } catch (err) {
         return res.status(401).json({ title: "user unauthorized", message: err.message });
     }
