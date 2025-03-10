@@ -14,7 +14,7 @@ import { ProductModel } from "../Models/Product.js";
 //     }
 // }
 export async function getAllProducts(req, res) {
-    let l = parseInt(req.query.limit) || 4;
+    let l = parseInt(req.query.limit) || 10;
     let page = parseInt(req.query.page) || 1;
 
     try {
