@@ -80,21 +80,55 @@ export async function updateUserPassword(req, res) {
     }
 }
 
+// export async function getUserNamePassword_login(req, res) {
+//     const { userName, password } = req.body;
+//     if (!userName || !password)
+//         return res.status(400).json({ title: "missing data", message: "userName and password are required" });
+
+//     try {
+//         let result = await userModel.findOne({ userName }).lean();
+//         if (!result)
+//             return res.status(404).json({ title: "cannot login", message: "no user with such userName" });
+
+//         const isPasswordValid = await bcrypt.compare(password, result.password);
+//         if (!isPasswordValid)
+//             return res.status(401).json({ title: "cannot login", message: "wrong password" });
+
+//         let { password, ...userDetails } = result;
+//         userDetails.token = generateToken(result);
+//         res.json(userDetails);
+//     } catch (err) {
+//         console.log(err);
+//         res.status(400).json({ title: "cannot get user with such details", message: err.message });
+//     }
+// }
+
+
 export async function getUserNamePassword_login(req, res) {
     const { userName, password } = req.body;
     if (!userName || !password)
         return res.status(400).json({ title: "missing data", message: "userName and password are required" });
 
     try {
-        let result = await userModel.findOne({ userName }).lean();
-        if (!result)
+        let result = await userModel.findOne({ userName }).select("+password").lean();
+
+        if (!result) {
             return res.status(404).json({ title: "cannot login", message: "no user with such userName" });
+        }
+
+        console.log("Password entered:", password);
+        console.log("Password from DB:", result.password);
+
+        if (!result.password) {
+            return res.status(500).json({ title: "cannot login", message: "password field is missing" });
+        }
 
         const isPasswordValid = await bcrypt.compare(password, result.password);
-        if (!isPasswordValid)
+        if (!isPasswordValid) {
             return res.status(401).json({ title: "cannot login", message: "wrong password" });
+        }
 
-        let { password, ...userDetails } = result;
+        let { password: _, ...userDetails } = result;
         userDetails.token = generateToken(result);
         res.json(userDetails);
     } catch (err) {
@@ -102,5 +136,3 @@ export async function getUserNamePassword_login(req, res) {
         res.status(400).json({ title: "cannot get user with such details", message: err.message });
     }
 }
-
-
