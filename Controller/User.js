@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import { userModel } from "../Models/User.js";
 import { generateToken } from '../Utils/jwt.js';
 
+
+
 import { userValidationSchema } from "../Models/User.js";
 
 export async function getAllUsers(req, res) {
@@ -26,28 +28,71 @@ export async function getUserById(req, res) {
     }
 }
 
+// export async function addUser_singUp(req, res) {
+//     const { error } = userValidationSchema.validate(req.body);
+//     if (error) {
+//         return res.status(400).json({ title: "Invalid input", message: error.details[0].message });
+//     }
+//     try {
+//         let alreadyUser = await userModel.findOne({ userName: req.body.userName }).lean();
+//         if (alreadyUser)
+//             return res.status(409).json({ title: "userName already exists", message: "change user name" });
+
+//         const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//         const newUser = new userModel({ ...req.body, password: hashedPassword });
+
+//         await newUser.save();
+
+//         let { password, ...userDetails } = newUser.toObject();
+//         userDetails.token = generateToken(newUser);
+//         res.json(userDetails);
+//     } catch (err) {
+//         res.status(400).json({ title: "cannot add user", message: err.message });
+//     }
+// }
+
+
 export async function addUser_singUp(req, res) {
+    // בדיקת תקינות קלט
     const { error } = userValidationSchema.validate(req.body);
     if (error) {
         return res.status(400).json({ title: "Invalid input", message: error.details[0].message });
     }
-    try {
-        let alreadyUser = await userModel.findOne({ userName: req.body.userName }).lean();
-        if (alreadyUser)
-            return res.status(409).json({ title: "userName already exists", message: "change user name" });
 
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const newUser = new userModel({ ...req.body, password: hashedPassword });
+    try {
+        const { userName, email, password, phone } = req.body;
+
+        // בדיקה אם המשתמש כבר קיים לפי שם משתמש
+        const alreadyUser = await userModel.findOne({ userName }).lean();
+        if (alreadyUser) {
+            return res.status(409).json({ title: "userName already exists", message: "change user name" });
+        }
+
+        // 🔹 הצפנת הסיסמה
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // יצירת משתמש חדש עם סיסמה מוצפנת ותאריך רישום
+        const newUser = new userModel({
+            userName,
+            email,
+            phone,
+            password: hashedPassword,
+            role: "user",
+            dateOfRegistration: new Date(), // הוספת תאריך רישום
+        });
 
         await newUser.save();
 
-        let { password, ...userDetails } = newUser.toObject();
+        // הסרת הסיסמה לפני שליחת הנתונים לצד לקוח
+        const { password: _, ...userDetails } = newUser.toObject();
         userDetails.token = generateToken(newUser);
-        res.json(userDetails);
+
+        res.status(201).json(userDetails);
     } catch (err) {
-        res.status(400).json({ title: "cannot add user", message: err.message });
+        res.status(500).json({ title: "Cannot add user", message: err.message });
     }
 }
+
 
 export async function updateUser(req, res) {
     let { id } = req.params;
