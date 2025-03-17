@@ -1,18 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { ProductModel } from "../Models/Product.js";
 
-// export async function getAllProducts(req, res) {
-//     let l=req.query.limit || 10;
-//     let page=req.query.page||1;
 
-//     try {
-//         let result = await ProductModel.find().skip((page-1)*l).limit(l);
-//         res.json(result);
-//     }
-//     catch (err) {
-//         res.status(400).json({ title: "can not found all products", message: err.message })
-//     }
-// }
 export async function getAllProducts(req, res) {
     let l = parseInt(req.query.limit) || 10;
     let page = parseInt(req.query.page) || 1;
@@ -27,21 +16,7 @@ export async function getAllProducts(req, res) {
         res.status(400).json({ title: "Cannot fetch products", message: err.message });
     }
 }
-// export const getTotalPages=async(req,res)=>{
-//     let l=req.query.limit||10;
-//     try{
-//         let result=await ProductModel.countDocuments();
-//         res.json({
-//             totalCount:result,
-//             pages:Math.ceil(result/l),
-//             limit:l
-//         })
-//     }
-//     catch(err){
-//         console.log(err)
-//         res.status(400).json({title:"cannot get all",message:err.message})
-//     }
-// }
+
 
 export const getTotalPages = async (req, res) => {
     let l = parseInt(req.query.limit) || 10;

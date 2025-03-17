@@ -613,3 +613,9 @@ GET /api/Product?limit=2
 GET /api/Product?limit=2
 GET /api/Product?page=1&limit=2
 POST /api/Product/
+POST /api/User/
+POST /api/User/
+PUT /api/User/67d1499fea6a4efbef7b07dd
+POST /api/order
+POST /api/order
+POST /api/order

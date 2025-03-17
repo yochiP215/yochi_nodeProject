@@ -25,6 +25,7 @@ export async function addOrder(req, res) {
         res.status(400).json({ title: "can not add order ", message: err.message })
     }
 }
+
 export async function deleteOrderById(req, res) {
     let { id } = req.params;
     try {
