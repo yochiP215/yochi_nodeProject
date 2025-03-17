@@ -52,12 +52,12 @@ export async function deleteOrderById(req, res) {
 
 
 export async function getAllORdersBYUserId(req, res) {
-    let {id } = req.params; 
+    let { id } = req.params;
     try {
         if (!id) {
             return res.status(400).json({ title: "Invalid userId", message: "userId is required" });
         }
-        const result = await orderModel.find({userId:id});
+        const result = await orderModel.find({ userId: id });
         if (!result) {
             return res.status(404).json({ title: "cannot get orders by userId", message: "no orders found for this userId" });
         }
@@ -72,9 +72,9 @@ export async function updateOrder(req, res) {
     let { id } = req.params;
     try {
         let result = await orderModel.findOneAndUpdate(
-            { _id: id, isGoOut: false }, 
-            { $set: { isGoOut: true } }, 
-            { new: true }  
+            { _id: id, isGoOut: false },
+            { $set: { isGoOut: true } },
+            { new: true }
         );
 
         if (!result)
