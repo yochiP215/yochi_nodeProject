@@ -1,7 +1,8 @@
-
 import bcrypt from 'bcryptjs';
 import { userModel } from "../Models/User.js";
 import { generateToken } from '../Utils/jwt.js';
+
+
 
 import { userValidationSchema } from "../Models/User.js";
 
@@ -26,28 +27,41 @@ export async function getUserById(req, res) {
     }
 }
 
+
+
+
 export async function addUser_singUp(req, res) {
     const { error } = userValidationSchema.validate(req.body);
     if (error) {
         return res.status(400).json({ title: "Invalid input", message: error.details[0].message });
     }
-    try {
-        let alreadyUser = await userModel.findOne({ userName: req.body.userName }).lean();
-        if (alreadyUser)
-            return res.status(409).json({ title: "userName already exists", message: "change user name" });
 
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const newUser = new userModel({ ...req.body, password: hashedPassword });
+    try {
+        const { userName, email, password, phone } = req.body;
+        const alreadyUser = await userModel.findOne({ userName }).lean();
+        if (alreadyUser) {
+            return res.status(409).json({ title: "userName already exists", message: "change user name" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new userModel({
+            userName,
+            email,
+            phone,
+            password: hashedPassword,
+            role: "user",
+            dateOfRegistration: new Date(), 
+        });
 
         await newUser.save();
-
-        let { password, ...userDetails } = newUser.toObject();
+        const { password: _, ...userDetails } = newUser.toObject();
         userDetails.token = generateToken(newUser);
-        res.json(userDetails);
+
+        res.status(201).json(userDetails);
     } catch (err) {
-        res.status(400).json({ title: "cannot add user", message: err.message });
+        res.status(500).json({ title: "Cannot add user", message: err.message });
     }
 }
+
 
 export async function updateUser(req, res) {
     let { id } = req.params;
@@ -83,7 +97,6 @@ export async function updateUserPassword(req, res) {
 export async function getUserNamePassword_login(req, res) {
     try {
         const { userName, password } = req.body;
-        
         if (!userName || !password) {
             return res.status(400).json({ title: "missing data", message: "userName and password are required" });
         }
@@ -111,7 +124,5 @@ export async function getUserNamePassword_login(req, res) {
         console.error("Login error:", err);
         res.status(500).json({ title: "cannot get user with such details", message: err.message });
     }
+
 }
-
-
-

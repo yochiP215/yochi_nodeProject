@@ -28,20 +28,14 @@ export async function addOrder(req, res) {
 export async function deleteOrderById(req, res) {
     let { id } = req.params;
     try {
-        // מציאת ההזמנה לפי ID
+     
         let order = await orderModel.findById(id);
-
-        // אם ההזמנה לא נמצאה
         if (!order) {
             return res.status(400).json({ title: "cannot delete by id", message: "no order with such id" });
         }
-
-        // אם ההזמנה כבר יצאה לדרך
         if (order.isGoOut) {
             return res.status(404).json({ title: "can not delete order", message: "the order has already gone out" });
         }
-
-        // אם ההזמנה לא יצאה לדרך, מחק את ההזמנה
         await orderModel.findByIdAndDelete(id);
         res.json({ message: "Order deleted successfully" });
 
