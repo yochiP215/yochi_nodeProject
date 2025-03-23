@@ -14,7 +14,6 @@ export async function getAllProducts(req, res) {
         res.status(400).json({ title: "Cannot fetch products", message: err.message });
     }
 }
-
 export const getTotalPages = async (req, res) => {
     let l = parseInt(req.query.limit) || 10;
     try {
