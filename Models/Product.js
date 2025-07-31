@@ -9,4 +9,5 @@ const productSchema=Schema({
     weight:Number,
     madeIn:String
 })
+productSchema.index({ prodName: "text", description: "text" });
 export const ProductModel=model("Product",productSchema);
